@@ -1,12 +1,15 @@
 import torch
 
 def main():
-    print(f"PyTorch version: {torch.__version__}")
-    print(f"CUDA available: {torch.cuda.is_available()}")
-    print(f"MPS available: {torch.backends.mps.is_available()}")
-    if torch.backends.mps.is_available():
-        print(f"Device: {torch.device('mps')}")
-
+    inputs = torch.tensor(
+        [
+            [0.43, 0.15, 0.89],
+            [0.55, 0.87, 0.66],
+        ]
+    )
+    query = inputs[1]
+    for i, x_i in enumerate(inputs):
+        print(torch.dot(x_i, query))
 
 if __name__ == "__main__":
     main()
