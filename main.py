@@ -1,15 +1,26 @@
-import torch
+import urllib.request
+import re
+
+def retrieve_raw_text():
+    url = ("https://raw.githubusercontent.com/rasbt/"
+           "LLMs-from-scratch/main/ch02/01_main-chapter-code/"
+           "the-verdict.txt"
+           )
+    file_path = "the-verdict.txt"
+    urllib.request.urlretrieve(url, file_path)
+
+def tokenize(text):
+    preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
+    preprocessed = [item.strip() for item in preprocessed if item.strip()]
+    print(len(preprocessed))
+    print(preprocessed[:30])
 
 def main():
-    inputs = torch.tensor(
-        [
-            [0.43, 0.15, 0.89],
-            [0.55, 0.87, 0.66],
-        ]
-    )
-    query = inputs[1]
-    for i, x_i in enumerate(inputs):
-        print(torch.dot(x_i, query))
+    # retrieve_raw_text()
+    with open("the-verdict.txt", "r", encoding="utf-8") as f:
+        raw_text = f.read()
+        tokenize(raw_text)
+    
 
 if __name__ == "__main__":
     main()
