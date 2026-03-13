@@ -1,5 +1,5 @@
 import urllib.request
-import re
+from simple_tokenizer import SimpleTokenizerV1          
 
 def retrieve_raw_text():
     url = ("https://raw.githubusercontent.com/rasbt/"
@@ -9,17 +9,11 @@ def retrieve_raw_text():
     file_path = "the-verdict.txt"
     urllib.request.urlretrieve(url, file_path)
 
-def tokenize(text):
-    preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
-    preprocessed = [item.strip() for item in preprocessed if item.strip()]
-    print(len(preprocessed))
-    print(preprocessed[:30])
-
 def main():
     # retrieve_raw_text()
     with open("the-verdict.txt", "r", encoding="utf-8") as f:
         raw_text = f.read()
-        tokenize(raw_text)
+        tokenizer = SimpleTokenizerV1(raw_text)
     
 
 if __name__ == "__main__":
