@@ -1,6 +1,7 @@
 import urllib.request
 import re
 import tiktoken
+import torch
 from simple_tokenizer import SimpleTokenizerV2
 from importlib.metadata import version
 from dataloader import GPTDatasetV1
@@ -50,6 +51,14 @@ def main():
     inputs, targets = next(data_iter)
     print("Inputs:\n", inputs)
     print("\nInputs:\n", targets)
+
+    vocab_size = 6
+    output_dim = 3
+
+    torch.manual_seed(123)
+    embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+    print(embedding_layer.weight)
+    print(embedding_layer(torch.tensor([3])))
 
     # enc_text = tokenizer.encode(raw_text)
     # enc_sample = enc_text[50:]
