@@ -30,7 +30,7 @@ uv run python main.py
 docker build -t make-llm .
 
 # 実行
-docker run --rm make-llm
+docker run --rm -v $(pwd):/app -v /app/.venv make-llm
 ```
 
 ## 動作確認
