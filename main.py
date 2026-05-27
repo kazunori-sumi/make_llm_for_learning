@@ -45,6 +45,9 @@ def create_embeddings(inputs, vocab_size, context_length, output_dim):
 def softmax_naive(x):
     return torch.exp(x) / torch.exp(x).sum(dim=0)
 
+def softmax_stable(x):
+    return torch.exp(x - x.max()) / torch.exp(x - x.max()).sum()
+
 def main():
     # with open("the-verdict.txt", "r", encoding="utf-8") as f:
     #     raw_text = f.read()
@@ -91,10 +94,16 @@ def main():
     # print(attn_weights_2_tmp)
     # print(attn_weights_2_tmp.sum())
 
+    # softmax の簡易版と安定版の比較
     attn_weights_2_naive = softmax_naive(attn_scores_2)
     print(attn_weights_2_naive)
     print(attn_weights_2_naive.sum())
+    
+    attn_weights_2_stable = softmax_stable(attn_scores_2)
+    print(attn_weights_2_stable)
+    print(attn_weights_2_stable.sum())
 
+    
 
 if __name__ == "__main__":
     main()
