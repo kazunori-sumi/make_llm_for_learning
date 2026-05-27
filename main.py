@@ -43,31 +43,48 @@ def create_embeddings(inputs, vocab_size, context_length, output_dim):
     return token_embeddings, pos_embeddings
 
 def main():
-    with open("the-verdict.txt", "r", encoding="utf-8") as f:
-        raw_text = f.read()
+    # with open("the-verdict.txt", "r", encoding="utf-8") as f:
+    #     raw_text = f.read()
 
-    vocab_size = 50257
-    output_dim = 256
-    max_length = 4
+    # vocab_size = 50257
+    # output_dim = 256
+    # max_length = 4
 
-    dataloader = create_dataloader_v1(
-        raw_text,
-        batch_size=8,
-        max_length=max_length,
-        stride=max_length,
-        shuffle=False
+    # dataloader = create_dataloader_v1(
+    #     raw_text,
+    #     batch_size=8,
+    #     max_length=max_length,
+    #     stride=max_length,
+    #     shuffle=False
+    # )
+    # data_iter = iter(dataloader)
+    # inputs, targets = next(data_iter)
+    # print("Token ids:\n", inputs)
+    # print("\nInputs: shape\n", inputs.shape)
+
+    # token_embeddings, pos_embeddings = create_embeddings(inputs, vocab_size, max_length, output_dim)
+    # print(token_embeddings.shape)
+    # print(pos_embeddings.shape)
+
+    # input_embeddings = token_embeddings + pos_embeddings
+    # print(input_embeddings.shape)
+
+    attn_inputs = torch.tensor(
+        [
+            [0.43, 0.15, 0.89],
+            [0.55, 0.87, 0.66],
+            [0.57, 0.85, 0.64],
+            [0.22, 0.58, 0.33],
+            [0.77, 0.25, 0.10],
+            [0.05, 0.80, 0.55],
+        ]
     )
-    data_iter = iter(dataloader)
-    inputs, targets = next(data_iter)
-    print("Token ids:\n", inputs)
-    print("\nInputs: shape\n", inputs.shape)
-
-    token_embeddings, pos_embeddings = create_embeddings(inputs, vocab_size, max_length, output_dim)
-    print(token_embeddings.shape)
-    print(pos_embeddings.shape)
-
-    input_embeddings = token_embeddings + pos_embeddings
-    print(input_embeddings.shape)
+    query = attn_inputs[1]
+    attn_scores_2 = torch.empty(attn_inputs.shape[0])
+    for i, x_i in enumerate(attn_inputs):
+        attn_scores_2[i] = torch.dot(x_i, query)
+    
+    print(attn_scores_2)
 
 if __name__ == "__main__":
     main()
