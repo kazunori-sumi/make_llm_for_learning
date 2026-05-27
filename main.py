@@ -42,6 +42,9 @@ def create_embeddings(inputs, vocab_size, context_length, output_dim):
     pos_embeddings = pos_embedding_layer(torch.arange(context_length))
     return token_embeddings, pos_embeddings
 
+def softmax_naive(x):
+    return torch.exp(x) / torch.exp(x).sum(dim=0)
+
 def main():
     # with open("the-verdict.txt", "r", encoding="utf-8") as f:
     #     raw_text = f.read()
@@ -84,7 +87,14 @@ def main():
     for i, x_i in enumerate(attn_inputs):
         attn_scores_2[i] = torch.dot(x_i, query)
     
-    print(attn_scores_2)
+    attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum() # attention 重みの合計が 1 になるように百分率で表現
+    # print(attn_weights_2_tmp)
+    # print(attn_weights_2_tmp.sum())
+
+    attn_weights_2_naive = softmax_naive(attn_scores_2)
+    print(attn_weights_2_naive)
+    print(attn_weights_2_naive.sum())
+
 
 if __name__ == "__main__":
     main()
