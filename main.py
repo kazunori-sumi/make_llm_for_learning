@@ -35,16 +35,19 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256, stride=128, shuffle=
 
     return dataloader
 
+def create_embeddings(inputs, vocab_size, context_length, output_dim):
+    token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+    pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
+    token_embeddings = token_embedding_layer(inputs)
+    pos_embeddings = pos_embedding_layer(torch.arange(context_length))
+    return token_embeddings, pos_embeddings
+
 def main():
-    tokenizer = tiktoken.get_encoding("gpt2")
     with open("the-verdict.txt", "r", encoding="utf-8") as f:
         raw_text = f.read()
 
     vocab_size = 50257
     output_dim = 256
-
-    token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
-
     max_length = 4
 
     dataloader = create_dataloader_v1(
@@ -59,13 +62,8 @@ def main():
     print("Token ids:\n", inputs)
     print("\nInputs: shape\n", inputs.shape)
 
-    token_embeddings = token_embedding_layer(inputs)
+    token_embeddings, pos_embeddings = create_embeddings(inputs, vocab_size, max_length, output_dim)
     print(token_embeddings.shape)
-
-    ## 絶対位置埋め込み層
-    context_length = max_length
-    pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
-    pos_embeddings = pos_embedding_layer(torch.arange(context_length))
     print(pos_embeddings.shape)
 
     input_embeddings = token_embeddings + pos_embeddings
