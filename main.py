@@ -96,14 +96,31 @@ def main():
 
     # softmax の簡易版と安定版の比較
     attn_weights_2_naive = softmax_naive(attn_scores_2)
+    attn_weights_2_stable = softmax_stable(attn_scores_2)
     print(attn_weights_2_naive)
     print(attn_weights_2_naive.sum())
-    
-    attn_weights_2_stable = softmax_stable(attn_scores_2)
     print(attn_weights_2_stable)
     print(attn_weights_2_stable.sum())
+    # pytorch の softmax を利用する
+    attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+    print(attn_weights_2)
+    print(attn_weights_2.sum())
 
-    
+    # 2つ目のトークンをクエリにする場合
+    query = attn_inputs[1]
+    context_vec_2 = torch.zeros(query.shape)
+    for i, x_i in enumerate(attn_inputs):
+        context_vec_2 = attn_weights_2[i] * x_i
+    print(context_vec_2)
+
+    attn_scores = torch.empty(6,6)
+    for i, x_i in enumerate(attn_inputs):
+        for j, x_j in enumerate(attn_inputs):
+            attn_scores[i,j] = torch.dot(x_i, x_j)
+    print(attn_scores)
+
+    attn_scores_2 = attn_inputs @ attn_inputs.T
+    print(attn_scores_2)
 
 if __name__ == "__main__":
     main()
