@@ -122,5 +122,50 @@ def main():
     attn_scores_2 = attn_inputs @ attn_inputs.T
     print(attn_scores_2)
 
+    # attention 重みのテンソル
+    attn_weights = torch.softmax(attn_scores, dim=-1)
+    print(attn_weights)
+
+    all_context_vecs = attn_weights @ attn_inputs
+    print(all_context_vecs)
+
+    x_2 = attn_inputs[1]
+    d_in = attn_inputs.shape[1]
+    d_out = 2
+
+    torch.manual_seed(123)
+    W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+    W_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+    W_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+
+    query_2 = x_2 @ W_query
+    key_2 = x_2 @ W_key
+    value_2 = x_2 @ W_value
+
+    # print(query_2)
+
+    keys = attn_inputs @ W_key
+    values = attn_inputs @ W_value
+    # print(keys.shape)
+    # print(values.shape)
+
+    keys_2 = keys[1]
+    attn_scores_22 = query_2.dot(keys_2)
+    print(attn_scores_22)
+
+    # 2番目のトークンと、全トークンとの内積を算出し Attention score とする
+    attn_scores_2 = query_2 @ keys.T
+    print(attn_scores_2)
+
+    # score から weight を計算する
+    # score に softmax を適用
+    d_k = keys.shape[1]
+    # √d_k == d_k ^(1/2) で割る
+    attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
+    print(attn_weights_2)
+
+    context_vec_2 = attn_weights_2 @ values
+    print(context_vec_2)
+
 if __name__ == "__main__":
     main()
