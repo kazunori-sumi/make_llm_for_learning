@@ -2,7 +2,7 @@ import urllib.request
 import re
 import tiktoken
 import torch
-from self_attention import SelfAttention_v1
+from self_attention import SelfAttention_v2
 from importlib.metadata import version
 from dataloader import GPTDatasetV1
 from torch.utils.data import DataLoader
@@ -90,9 +90,9 @@ def main():
     x_2 = attn_inputs[1]
     d_in = attn_inputs.shape[1]
     d_out = 2
-    torch.manual_seed(123)
-    sa_v1 = SelfAttention_v1(d_in, d_out)
-    print(sa_v1(attn_inputs))
+    torch.manual_seed(789)
+    sa_v2 = SelfAttention_v2(d_in, d_out)
+    print(sa_v2(attn_inputs))
 
 if __name__ == "__main__":
     main()
