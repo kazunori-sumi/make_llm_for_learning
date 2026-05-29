@@ -2,7 +2,7 @@ import urllib.request
 import re
 import tiktoken
 import torch
-from simple_tokenizer import SimpleTokenizerV2
+from self_attention import SelfAttention_v1
 from importlib.metadata import version
 from dataloader import GPTDatasetV1
 from torch.utils.data import DataLoader
@@ -75,6 +75,7 @@ def main():
     # input_embeddings = token_embeddings + pos_embeddings
     # print(input_embeddings.shape)
 
+
     attn_inputs = torch.tensor(
         [
             [0.43, 0.15, 0.89],
@@ -85,87 +86,13 @@ def main():
             [0.05, 0.80, 0.55],
         ]
     )
-    query = attn_inputs[1]
-    attn_scores_2 = torch.empty(attn_inputs.shape[0])
-    for i, x_i in enumerate(attn_inputs):
-        attn_scores_2[i] = torch.dot(x_i, query)
-    
-    attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum() # attention 重みの合計が 1 になるように百分率で表現
-    # print(attn_weights_2_tmp)
-    # print(attn_weights_2_tmp.sum())
-
-    # softmax の簡易版と安定版の比較
-    attn_weights_2_naive = softmax_naive(attn_scores_2)
-    attn_weights_2_stable = softmax_stable(attn_scores_2)
-    print(attn_weights_2_naive)
-    print(attn_weights_2_naive.sum())
-    print(attn_weights_2_stable)
-    print(attn_weights_2_stable.sum())
-    # pytorch の softmax を利用する
-    attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
-    print(attn_weights_2)
-    print(attn_weights_2.sum())
-
-    # 2つ目のトークンをクエリにする場合
-    query = attn_inputs[1]
-    context_vec_2 = torch.zeros(query.shape)
-    for i, x_i in enumerate(attn_inputs):
-        context_vec_2 = attn_weights_2[i] * x_i
-    print(context_vec_2)
-
-    attn_scores = torch.empty(6,6)
-    for i, x_i in enumerate(attn_inputs):
-        for j, x_j in enumerate(attn_inputs):
-            attn_scores[i,j] = torch.dot(x_i, x_j)
-    print(attn_scores)
-
-    attn_scores_2 = attn_inputs @ attn_inputs.T
-    print(attn_scores_2)
-
-    # attention 重みのテンソル
-    attn_weights = torch.softmax(attn_scores, dim=-1)
-    print(attn_weights)
-
-    all_context_vecs = attn_weights @ attn_inputs
-    print(all_context_vecs)
 
     x_2 = attn_inputs[1]
     d_in = attn_inputs.shape[1]
     d_out = 2
-
     torch.manual_seed(123)
-    W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
-    W_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
-    W_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
-
-    query_2 = x_2 @ W_query
-    key_2 = x_2 @ W_key
-    value_2 = x_2 @ W_value
-
-    # print(query_2)
-
-    keys = attn_inputs @ W_key
-    values = attn_inputs @ W_value
-    # print(keys.shape)
-    # print(values.shape)
-
-    keys_2 = keys[1]
-    attn_scores_22 = query_2.dot(keys_2)
-    print(attn_scores_22)
-
-    # 2番目のトークンと、全トークンとの内積を算出し Attention score とする
-    attn_scores_2 = query_2 @ keys.T
-    print(attn_scores_2)
-
-    # score から weight を計算する
-    # score に softmax を適用
-    d_k = keys.shape[1]
-    # √d_k == d_k ^(1/2) で割る
-    attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
-    print(attn_weights_2)
-
-    context_vec_2 = attn_weights_2 @ values
-    print(context_vec_2)
+    sa_v1 = SelfAttention_v1(d_in, d_out)
+    print(sa_v1(attn_inputs))
 
 if __name__ == "__main__":
     main()
