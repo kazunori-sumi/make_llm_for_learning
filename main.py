@@ -5,6 +5,7 @@ import torch
 from self_attention import SelfAttention_v2
 from causal_attention import CausalAttention
 from multi_head_attention_wrapper import MultiHeadAttentionWrapper
+from multi_head_attention import MultiHeadAttention
 from importlib.metadata import version
 from dataloader import GPTDatasetV1
 from torch.utils.data import DataLoader
@@ -126,21 +127,28 @@ def main():
     batch = torch.stack((attn_inputs, attn_inputs), dim=0)
     # print(batch.shape)
 
-    torch.manual_seed(123)
-    context_length = batch.shape[1]
-    ca = CausalAttention(d_in, d_out, context_length, 0.0)
-    context_vecs = ca(batch)
+    # torch.manual_seed(123)
+    # context_length = batch.shape[1]
+    # ca = CausalAttention(d_in, d_out, context_length, 0.0)
+    # context_vecs = ca(batch)
+    # print(context_vecs.shape)
+
+    # torch.manual_seed(123)
+    # context_length = batch.shape[1]
+    # d_in, d_out = 3,2
+    # mha = MultiHeadAttentionWrapper(d_in, d_out, context_length, 0.0, num_heads=2)
+    # context_vecs = mha(batch)
+
+    # print(context_vecs)
     # print(context_vecs.shape)
 
     torch.manual_seed(123)
-    context_length = batch.shape[1]
-    d_in, d_out = 3,2
+    batch_size, context_length, d_in = batch.shape
+    d_out = 2
     mha = MultiHeadAttentionWrapper(d_in, d_out, context_length, 0.0, num_heads=2)
     context_vecs = mha(batch)
-
     print(context_vecs)
     print(context_vecs.shape)
-
 
 if __name__ == "__main__":
     main()
