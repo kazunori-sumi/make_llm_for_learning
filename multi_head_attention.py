@@ -42,9 +42,6 @@ class MultiHeadAttention(nn.Module):
 
     attn_scores.masked_fill_(mask_bool, -torch.inf)
 
-    attn_scores.masked_fill_(
-      self.mask.bool()[:num_tokens, :num_tokens], -torch.inf
-    )
     attn_weights = torch.softmax(
       attn_scores / keys.shape[-1] ** 0.5, dim=-1
     )
