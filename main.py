@@ -8,6 +8,7 @@ from dummy_gpt_model import DummyGPTModel
 from dummy_gpt_model import LayerNorm
 from feed_forward import FeedForward
 from feed_forward import ExampleDeepNuralNetwork
+from transformer_block import TransformerBlock
 
 def main():
     GPT_CONFIG_124M = {
@@ -54,6 +55,13 @@ def main():
     )
 
     print_gradients(model_without_shortcut, sample_input)
+
+    x = torch.rand(2,4,768)
+    block = TransformerBlock(GPT_CONFIG_124M)
+    output = block(x)
+
+    print(x.shape)
+    print(output.shape)
 
 def print_gradients(model, x):
     output = model(x)
