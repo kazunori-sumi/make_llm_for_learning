@@ -6,6 +6,7 @@ import torch.nn as nn
 
 from dummy_gpt_model import DummyGPTModel
 from dummy_gpt_model import LayerNorm
+from feed_forward import FeedForward
 
 def main():
     GPT_CONFIG_124M = {
@@ -36,6 +37,12 @@ def main():
     layer = nn.Sequential(nn.Linear(5,6), nn.ReLU())
     out = layer(batch_example)
     print(out)
+
+    ffn = FeedForward(GPT_CONFIG_124M)
+
+    x = torch.rand(2,3,768)
+    out = ffn(x)
+    print(out.shape)
 
 if __name__ == "__main__":
     main()
