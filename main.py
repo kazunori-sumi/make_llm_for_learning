@@ -4,8 +4,8 @@ import tiktoken
 import torch
 import torch.nn as nn
 
-from dummy_gpt_model import DummyGPTModel
-from dummy_gpt_model import LayerNorm
+from gpt_model import GPTModel
+from gpt_model import LayerNorm
 from feed_forward import FeedForward
 from feed_forward import ExampleDeepNuralNetwork
 from transformer_block import TransformerBlock
@@ -31,37 +31,39 @@ def main():
     batch = torch.stack(batch, dim=0)
 
     torch.manual_seed(123)
-    model = DummyGPTModel(GPT_CONFIG_124M)
-    logits = model(batch)
-    print(logits)
-
-    batch_example = torch.randn(2,5)
-    layer = nn.Sequential(nn.Linear(5,6), nn.ReLU())
-    out = layer(batch_example)
+    model = GPTModel(GPT_CONFIG_124M)
+    out = model(batch)
+    print(batch)
+    print(out.shape)
     print(out)
 
-    ffn = FeedForward(GPT_CONFIG_124M)
+    # batch_example = torch.randn(2,5)
+    # layer = nn.Sequential(nn.Linear(5,6), nn.ReLU())
+    # out = layer(batch_example)
+    # print(out)
 
-    x = torch.rand(2,3,768)
-    out = ffn(x)
-    print(out.shape)
+    # ffn = FeedForward(GPT_CONFIG_124M)
 
-    layer_sizes = [3,3,3,3,3,1]
-    sample_input = torch.tensor([[1.,0.,-1.]])
+    # x = torch.rand(2,3,768)
+    # out = ffn(x)
+    # print(out.shape)
 
-    torch.manual_seed(123)
-    model_without_shortcut = ExampleDeepNuralNetwork(
-        layer_sizes, use_shortcut=False
-    )
+    # layer_sizes = [3,3,3,3,3,1]
+    # sample_input = torch.tensor([[1.,0.,-1.]])
 
-    print_gradients(model_without_shortcut, sample_input)
+    # torch.manual_seed(123)
+    # model_without_shortcut = ExampleDeepNuralNetwork(
+    #     layer_sizes, use_shortcut=False
+    # )
 
-    x = torch.rand(2,4,768)
-    block = TransformerBlock(GPT_CONFIG_124M)
-    output = block(x)
+    # print_gradients(model_without_shortcut, sample_input)
 
-    print(x.shape)
-    print(output.shape)
+    # x = torch.rand(2,4,768)
+    # block = TransformerBlock(GPT_CONFIG_124M)
+    # output = block(x)
+
+    # print(x.shape)
+    # print(output.shape)
 
 def print_gradients(model, x):
     output = model(x)
