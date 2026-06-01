@@ -7,6 +7,7 @@ import torch.nn as nn
 from dummy_gpt_model import DummyGPTModel
 from dummy_gpt_model import LayerNorm
 from feed_forward import FeedForward
+from feed_forward import ExampleDeepNuralNetwork
 
 def main():
     GPT_CONFIG_124M = {
@@ -43,6 +44,32 @@ def main():
     x = torch.rand(2,3,768)
     out = ffn(x)
     print(out.shape)
+
+    layer_sizes = [3,3,3,3,3,1]
+    sample_input = torch.tensor([[1.,0.,-1.]])
+
+    torch.manual_seed(123)
+    model_without_shortcut = ExampleDeepNuralNetwork(
+        layer_sizes, use_shortcut=False
+    )
+
+    print_gradients(model_without_shortcut, sample_input)
+
+def print_gradients(model, x):
+    output = model(x)
+    target = torch.tensor([[0.]])
+
+    loss = nn.MSELoss()
+    loss = loss(output, target)
+
+    loss.backward()
+
+    for name, param, in model.named_parameters():
+        if 'weight' in name:
+            print(
+                f"{name} has gradient mean of "
+                f"{param.grad.abs().mean().item()}"
+            )
 
 if __name__ == "__main__":
     main()
