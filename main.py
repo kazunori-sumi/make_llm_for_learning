@@ -22,64 +22,40 @@ def main():
     }
 
     tokenizer = tiktoken.get_encoding("gpt2")
-    batch = []
-    txt1="Every effort moves you"
-    txt2="Every day holds a"
 
-    batch.append(torch.tensor(tokenizer.encode(txt1)))
-    batch.append(torch.tensor(tokenizer.encode(txt2)))
-    batch = torch.stack(batch, dim=0)
+    start_context = "Hello, I am"
+    encoded = tokenizer.encode(start_context)
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)
 
     torch.manual_seed(123)
     model = GPTModel(GPT_CONFIG_124M)
-    out = model(batch)
-    print(batch)
-    print(out.shape)
-    print(out)
+    
+    model.eval()
+    
+    out = generate_text_simple(
+        model=model,
+        idx=encoded_tensor,
+        max_new_tokens=6,
+        context_size=GPT_CONFIG_124M["context_length"]
+    )
+    print("Output:", out)
+    print("Output length", len(out[0]))
 
-    # batch_example = torch.randn(2,5)
-    # layer = nn.Sequential(nn.Linear(5,6), nn.ReLU())
-    # out = layer(batch_example)
-    # print(out)
+    decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+    print(decoded_text)
 
-    # ffn = FeedForward(GPT_CONFIG_124M)
+def generate_text_simple(model, idx, max_new_tokens, context_size):
+    for _ in range(max_new_tokens):
+        idx_cond = idx[:, -context_size:]
+        with torch.no_grad():
+            logits = model(idx_cond)
 
-    # x = torch.rand(2,3,768)
-    # out = ffn(x)
-    # print(out.shape)
+        logits = logits[:, -1, :]
+        probas = torch.softmax(logits, dim=-1)
+        idx_next = torch.argmax(probas, dim=-1, keepdim=True)
+        idx = torch.cat((idx, idx_next), dim=1)
 
-    # layer_sizes = [3,3,3,3,3,1]
-    # sample_input = torch.tensor([[1.,0.,-1.]])
-
-    # torch.manual_seed(123)
-    # model_without_shortcut = ExampleDeepNuralNetwork(
-    #     layer_sizes, use_shortcut=False
-    # )
-
-    # print_gradients(model_without_shortcut, sample_input)
-
-    # x = torch.rand(2,4,768)
-    # block = TransformerBlock(GPT_CONFIG_124M)
-    # output = block(x)
-
-    # print(x.shape)
-    # print(output.shape)
-
-def print_gradients(model, x):
-    output = model(x)
-    target = torch.tensor([[0.]])
-
-    loss = nn.MSELoss()
-    loss = loss(output, target)
-
-    loss.backward()
-
-    for name, param, in model.named_parameters():
-        if 'weight' in name:
-            print(
-                f"{name} has gradient mean of "
-                f"{param.grad.abs().mean().item()}"
-            )
+    return idx
 
 if __name__ == "__main__":
     main()
