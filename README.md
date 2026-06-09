@@ -33,6 +33,13 @@ docker build -t make-llm .
 docker run --rm -v $(pwd):/app -v /app/.venv make-llm
 ```
 
+Apple Silicon などの ARM64 環境で実行時に何も表示されない場合は、PyTorch の CPU 命令互換性の問題を避けるため amd64 イメージとしてビルド・実行してください。
+
+```bash
+docker build --platform linux/amd64 -t make-llm-amd64 .
+docker run --rm --platform linux/amd64 -v $(pwd):/app -v /app/.venv make-llm-amd64
+```
+
 ## 動作確認
 ```bash
 uv run python main.py
